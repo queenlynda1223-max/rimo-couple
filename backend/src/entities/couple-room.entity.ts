@@ -1,0 +1,40 @@
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+
+@Entity('couple_rooms')
+export class CoupleRoom {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column()
+  user1Id: string;
+
+  @Column({ nullable: true })
+  user2Id: string;
+
+  @Column({ unique: true, length: 8 })
+  invitationCode: string;
+
+  @Column({ unique: true })
+  invitationLink: string;
+
+  @Column({ default: false })
+  isConnected: boolean;
+
+  @Column({ default: 'bg_couple_default' })
+  backgroundId: string;
+
+  @Column({ nullable: true })
+  bgmId: string;
+
+  @Column('simple-json', { default: '[]' })
+  items: { itemId: string; x: number; y: number; zIndex: number }[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @Column({ nullable: true })
+  connectedAt: Date;
+}
