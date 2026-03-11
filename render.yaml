@@ -2,14 +2,12 @@ services:
   - type: web
     name: rimo-backend
     runtime: node
-    region: singapore
+    plan: free
     rootDir: backend
     buildCommand: npm install && npm run build && mkdir -p uploads
     startCommand: node dist/main.js
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: "4000"
       - key: JWT_SECRET
         generateValue: true
