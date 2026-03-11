@@ -23,8 +23,9 @@ import { MediaFile } from './entities/media-file.entity';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'better-sqlite3',
-      database: join(__dirname, '..', 'rimo.db'),
+      type: 'sqljs',
+      location: join(__dirname, '..', 'rimo.db'),
+      autoSave: true,
       entities: [User, Minime, MiniRoom, CoupleRoom, Post, Schedule, Todo, MediaFile],
       synchronize: true,
     }),
