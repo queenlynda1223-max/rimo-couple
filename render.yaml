@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     rootDir: backend
-    buildCommand: npm install && npm run build && mkdir -p uploads
+    buildCommand: npm install --include=dev && npx nest build && mkdir -p uploads
     startCommand: node dist/main.js
     envVars:
       - key: NODE_ENV
