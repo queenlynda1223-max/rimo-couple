@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 import { BoardPanel } from '@/components/BoardPanel';
 import { SchedulePanel } from '@/components/SchedulePanel';
 import { TodoPanel } from '@/components/TodoPanel';
-import { MinimeCharacter } from '@/components/MinimeCharacter';
+import { MinimeWalker } from '@/components/MinimeWalker';
 import { joinRoom, leaveRoom } from '@/lib/socket';
 
 const BACKGROUNDS = [
@@ -133,25 +133,19 @@ export default function CoupleRoomPage() {
         {activeTab === 'room' && (
           <div className={`relative rounded-3xl bg-gradient-to-br ${currentBg.color} p-8 min-h-[320px] md:min-h-[400px] overflow-hidden mb-4`}>
             <div className="absolute inset-0 bg-white/10" />
-            <div className="relative z-10 flex flex-col items-center justify-center h-full min-h-[280px]">
+            <div className="relative z-10 h-full min-h-[280px] md:min-h-[360px]">
               {room.isConnected ? (
-                <div className="flex items-end gap-4">
-                  <div className="text-center">
-                    <div className="flex items-center justify-center mx-auto mb-2 drop-shadow-lg">
-                      <MinimeCharacter config={user1Minime || {}} size={85} />
-                    </div>
-                    <span className="text-xs font-medium text-gray-600 bg-white/60 px-3 py-1 rounded-full">나</span>
+                <>
+                  <MinimeWalker config={user1Minime || {}} size={75} nickname="나" initialX={80} />
+                  <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+                    <MinimeWalker config={user2Minime || {}} size={75} nickname="상대방" initialX={200} />
                   </div>
-                  <Heart className="w-8 h-8 text-rose-400 fill-rose-400 animate-pulse mb-12" />
-                  <div className="text-center">
-                    <div className="flex items-center justify-center mx-auto mb-2 drop-shadow-lg">
-                      <MinimeCharacter config={user2Minime || {}} size={85} />
-                    </div>
-                    <span className="text-xs font-medium text-gray-600 bg-white/60 px-3 py-1 rounded-full">상대방</span>
+                  <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30">
+                    <Heart className="w-6 h-6 text-rose-400 fill-rose-400 animate-pulse" />
                   </div>
-                </div>
+                </>
               ) : (
-                <div className="text-center">
+                <div className="flex flex-col items-center justify-center h-full min-h-[280px]">
                   <Users className="w-16 h-16 text-gray-400/50 mx-auto mb-4" />
                   <p className="text-gray-500 font-medium">상대방의 연결을 기다리고 있어요</p>
                   <p className="text-sm text-gray-400 mt-1">초대 코드: {room.invitationCode}</p>

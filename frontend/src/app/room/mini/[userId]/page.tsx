@@ -11,7 +11,7 @@ import { BoardPanel } from '@/components/BoardPanel';
 import { SchedulePanel } from '@/components/SchedulePanel';
 import { TodoPanel } from '@/components/TodoPanel';
 import { MinimePanel } from '@/components/MinimePanel';
-import { MinimeCharacter } from '@/components/MinimeCharacter';
+import { MinimeWalker } from '@/components/MinimeWalker';
 import { StatusMessage } from '@/components/StatusMessage';
 
 const BACKGROUNDS = [
@@ -116,16 +116,9 @@ export default function MiniRoomPage() {
         {activeTab === 'room' && (
           <div className={`relative rounded-3xl bg-gradient-to-br ${currentBg.color} p-8 min-h-[320px] md:min-h-[400px] overflow-hidden mb-4`}>
             <div className="absolute inset-0 bg-white/10" />
-            <div className="relative z-10 flex flex-col items-center justify-center h-full min-h-[280px]">
+            <div className="relative z-10 h-full min-h-[280px] md:min-h-[360px]">
               {minime && (
-                <div className="text-center">
-                  <div className="flex items-center justify-center mx-auto mb-3 drop-shadow-lg">
-                    <MinimeCharacter config={minime} size={110} />
-                  </div>
-                  <p className="text-sm font-medium text-gray-700 bg-white/60 backdrop-blur-sm px-4 py-1.5 rounded-full inline-block">
-                    {user?.nickname || '나'}의 미니룸
-                  </p>
-                </div>
+                <MinimeWalker config={minime} size={90} nickname={user?.nickname || '나'} />
               )}
             </div>
 
