@@ -12,6 +12,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(() => {
+    if (typeof window !== 'undefined') return localStorage.getItem('rimo_remember') === 'true';
+    return false;
+  });
   const login = useAuthStore((s) => s.login);
   const router = useRouter();
 
@@ -19,7 +23,7 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(email, password);
+      await login(email, password, rememberMe);
       toast.success('로그인 성공!');
       router.push('/home');
     } catch (err: any) {
@@ -82,6 +86,16 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
+
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded border-gray-300 text-pink-500 focus:ring-pink-300 cursor-pointer"
+              />
+              <span className="text-sm text-gray-600">로그인 저장</span>
+            </label>
 
             <button
               type="submit"

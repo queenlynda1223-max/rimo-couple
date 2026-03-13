@@ -8,7 +8,7 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('rimo_token');
+    const token = localStorage.getItem('rimo_token') || sessionStorage.getItem('rimo_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
