@@ -22,13 +22,23 @@ import { MediaFile } from './entities/media-file.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'sqljs',
-      location: join(__dirname, '..', 'rimo.db'),
-      autoSave: true,
-      entities: [User, Minime, MiniRoom, CoupleRoom, Post, Schedule, Todo, MediaFile],
-      synchronize: true,
-    }),
+    TypeOrmModule.forRoot(
+      process.env.DATABASE_URL
+        ? {
+            type: 'postgres',
+            url: process.env.DATABASE_URL,
+            ssl: { rejectUnauthorized: false },
+            entities: [User, Minime, MiniRoom, CoupleRoom, Post, Schedule, Todo, MediaFile],
+            synchronize: true,
+          }
+        : {
+            type: 'sqljs',
+            location: join(__dirname, '..', 'rimo.db'),
+            autoSave: true,
+            entities: [User, Minime, MiniRoom, CoupleRoom, Post, Schedule, Todo, MediaFile],
+            synchronize: true,
+          },
+    ),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads',
