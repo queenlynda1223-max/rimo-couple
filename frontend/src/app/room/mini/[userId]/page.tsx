@@ -11,6 +11,7 @@ import { BoardPanel } from '@/components/BoardPanel';
 import { SchedulePanel } from '@/components/SchedulePanel';
 import { TodoPanel } from '@/components/TodoPanel';
 import { MinimePanel } from '@/components/MinimePanel';
+import { MinimeCharacter } from '@/components/MinimeCharacter';
 import { StatusMessage } from '@/components/StatusMessage';
 
 const BACKGROUNDS = [
@@ -118,10 +119,8 @@ export default function MiniRoomPage() {
             <div className="relative z-10 flex flex-col items-center justify-center h-full min-h-[280px]">
               {minime && (
                 <div className="text-center">
-                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-white/60 backdrop-blur-sm border-4 border-white/80 flex items-center justify-center mx-auto mb-3 shadow-lg">
-                    <span className="text-4xl md:text-5xl">
-                      {minime.faceType === 'happy' ? '😊' : minime.faceType === 'cool' ? '😎' : minime.faceType === 'love' ? '🥰' : minime.faceType === 'cat' ? '😺' : '🙂'}
-                    </span>
+                  <div className="flex items-center justify-center mx-auto mb-3 drop-shadow-lg">
+                    <MinimeCharacter config={minime} size={110} />
                   </div>
                   <p className="text-sm font-medium text-gray-700 bg-white/60 backdrop-blur-sm px-4 py-1.5 rounded-full inline-block">
                     {user?.nickname || '나'}의 미니룸

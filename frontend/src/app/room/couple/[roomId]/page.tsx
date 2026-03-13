@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { BoardPanel } from '@/components/BoardPanel';
 import { SchedulePanel } from '@/components/SchedulePanel';
 import { TodoPanel } from '@/components/TodoPanel';
+import { MinimeCharacter } from '@/components/MinimeCharacter';
 import { joinRoom, leaveRoom } from '@/lib/socket';
 
 const BACKGROUNDS = [
@@ -98,14 +99,6 @@ export default function CoupleRoomPage() {
   }
 
   const currentBg = BACKGROUNDS.find(b => b.id === room.backgroundId) || BACKGROUNDS[0];
-  const getEmoji = (minime: any) => {
-    if (!minime) return '🙂';
-    if (minime.faceType === 'happy') return '😊';
-    if (minime.faceType === 'cool') return '😎';
-    if (minime.faceType === 'love') return '🥰';
-    if (minime.faceType === 'cat') return '😺';
-    return '🙂';
-  };
 
   const tabs = [
     { key: 'room' as Tab, icon: Users, label: '룸' },
@@ -142,17 +135,17 @@ export default function CoupleRoomPage() {
             <div className="absolute inset-0 bg-white/10" />
             <div className="relative z-10 flex flex-col items-center justify-center h-full min-h-[280px]">
               {room.isConnected ? (
-                <div className="flex items-end gap-6">
+                <div className="flex items-end gap-4">
                   <div className="text-center">
-                    <div className="w-20 h-20 md:w-28 md:h-28 rounded-full bg-white/60 backdrop-blur-sm border-4 border-white/80 flex items-center justify-center mx-auto mb-2 shadow-lg">
-                      <span className="text-3xl md:text-4xl">{getEmoji(user1Minime)}</span>
+                    <div className="flex items-center justify-center mx-auto mb-2 drop-shadow-lg">
+                      <MinimeCharacter config={user1Minime || {}} size={85} />
                     </div>
                     <span className="text-xs font-medium text-gray-600 bg-white/60 px-3 py-1 rounded-full">나</span>
                   </div>
-                  <Heart className="w-8 h-8 text-rose-400 fill-rose-400 animate-pulse mb-8" />
+                  <Heart className="w-8 h-8 text-rose-400 fill-rose-400 animate-pulse mb-12" />
                   <div className="text-center">
-                    <div className="w-20 h-20 md:w-28 md:h-28 rounded-full bg-white/60 backdrop-blur-sm border-4 border-white/80 flex items-center justify-center mx-auto mb-2 shadow-lg">
-                      <span className="text-3xl md:text-4xl">{getEmoji(user2Minime)}</span>
+                    <div className="flex items-center justify-center mx-auto mb-2 drop-shadow-lg">
+                      <MinimeCharacter config={user2Minime || {}} size={85} />
                     </div>
                     <span className="text-xs font-medium text-gray-600 bg-white/60 px-3 py-1 rounded-full">상대방</span>
                   </div>

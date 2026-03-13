@@ -16,14 +16,23 @@ export class Minime {
   @Column({ default: 'default' })
   faceType: string;
 
-  @Column({ default: 'default' })
+  @Column({ default: 'happy' })
+  expression: string;
+
+  @Column({ default: 'fair' })
+  skinColor: string;
+
+  @Column({ default: 'short' })
   hairStyle: string;
 
-  @Column({ default: '#000000' })
+  @Column({ default: '#2C1810' })
   hairColor: string;
 
-  @Column({ default: 'default' })
+  @Column({ default: 'tshirt' })
   outfit: string;
+
+  @Column({ default: '#FF6B8A' })
+  outfitColor: string;
 
   @Column('simple-json', { default: '[]' })
   accessories: string[];
