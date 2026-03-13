@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { MinimeCharacter } from './MinimeCharacter';
+import { SPRITE_W, SPRITE_H } from './MinimeSprites';
 
 interface MinimeWalkerProps {
   config: Record<string, any>;
@@ -20,23 +21,25 @@ export function MinimeWalker({ config, size = 80, nickname, initialX, initialY }
   const posRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const animRef = useRef<number>();
 
+  const charH = Math.round(size * (SPRITE_H / SPRITE_W));
+
   useEffect(() => {
     if (pos !== null || !containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     const startX = initialX ?? (rect.width / 2 - size / 2);
-    const startY = initialY ?? (rect.height - size - 30);
+    const startY = initialY ?? (rect.height - charH - 20);
     setPos({ x: startX, y: startY });
     posRef.current = { x: startX, y: startY };
-  }, [pos, size, initialX, initialY]);
+  }, [pos, size, charH, initialX, initialY]);
 
   const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     const clickX = e.clientX - rect.left - size / 2;
-    const clickY = e.clientY - rect.top - size / 2;
+    const clickY = e.clientY - rect.top - charH / 2;
     const maxX = rect.width - size;
-    const maxY = rect.height - size - 10;
-    const minY = rect.height * 0.3;
+    const maxY = rect.height - charH - 10;
+    const minY = rect.height * 0.2;
     const tx = Math.max(0, Math.min(maxX, clickX));
     const ty = Math.max(minY, Math.min(maxY, clickY));
 
