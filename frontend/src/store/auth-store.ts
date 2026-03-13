@@ -56,9 +56,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const { data } = await authApi.getMe();
       set({ user: data.user, isAuthenticated: true, isLoading: false });
       connectSocket(data.user.id);
-    } catch {
-      localStorage.removeItem('rimo_token');
-      set({ user: null, isAuthenticated: false, isLoading: false });
+    } catch (err: any) {
+      if (err.status === 401) {
+        localStorage.removeItem('rimo_token');
+        set({ user: null, isAuthenticated: false, isLoading: false });
+      } else {
+        set({ user: null, isAuthenticated: false, isLoading: false });
+      }
     }
   },
 }));

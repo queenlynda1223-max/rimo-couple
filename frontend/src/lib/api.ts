@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: '/api',
+  timeout: 60000,
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -18,8 +19,11 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    const status = error.response?.status;
     const message = error.response?.data?.message || '오류가 발생했습니다';
-    return Promise.reject(new Error(message));
+    const enrichedError = new Error(message);
+    (enrichedError as any).status = status;
+    return Promise.reject(enrichedError);
   },
 );
 
