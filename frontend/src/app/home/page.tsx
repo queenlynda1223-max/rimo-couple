@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth-store';
 import { useRoomStore } from '@/store/room-store';
-import { roomApi } from '@/lib/api';
+import { roomApi, userApi } from '@/lib/api';
 import { Heart, Home, Users, LogOut, MessageCircle, Calendar, CheckSquare, Smile, Copy, Check } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import { MinimeCharacter } from '@/components/MinimeCharacter';
 
 export default function HomePage() {
   const { user, isAuthenticated, isLoading, logout } = useAuthStore();
@@ -16,6 +17,8 @@ export default function HomePage() {
   const [inviteCode, setInviteCode] = useState('');
   const [joinCode, setJoinCode] = useState('');
   const [copied, setCopied] = useState(false);
+  const [myMinime, setMyMinime] = useState<any>(null);
+  const [partnerMinime, setPartnerMinime] = useState<any>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -35,10 +38,25 @@ export default function HomePage() {
       const { data: miniData } = await roomApi.getMiniRoom(user!.id);
       setMiniRoom(miniData.room);
 
+      try {
+        const { data: minimeData } = await userApi.getMinime(user!.id);
+        setMyMinime(minimeData.minime);
+      } catch {}
+
       const { data: coupleData } = await roomApi.getMyCoupleRoom();
       if (coupleData.room) {
         setLocalCoupleRoom(coupleData.room);
         setCoupleRoom(coupleData.room);
+
+        const partnerId = coupleData.room.user1Id === user!.id
+          ? coupleData.room.user2Id
+          : coupleData.room.user1Id;
+        if (partnerId) {
+          try {
+            const { data: pm } = await userApi.getMinime(partnerId);
+            setPartnerMinime(pm.minime);
+          } catch {}
+        }
       }
     } catch {}
   };
@@ -119,7 +137,14 @@ export default function HomePage() {
               </div>
               <h3 className="font-semibold text-gray-800">내 미니룸</h3>
             </div>
-            <p className="text-sm text-gray-500">나만의 공간을 꾸미고 관리해요</p>
+            <div className="flex items-center gap-4">
+              {myMinime && (
+                <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl p-3 flex items-center justify-center">
+                  <MinimeCharacter config={myMinime} size={60} />
+                </div>
+              )}
+              <p className="text-sm text-gray-500">{myMinime ? `${user.nickname || '나'}의 미니룸` : '나만의 공간을 꾸미고 관리해요'}</p>
+            </div>
           </Link>
 
           {coupleRoom?.isConnected ? (
@@ -130,7 +155,15 @@ export default function HomePage() {
                 </div>
                 <h3 className="font-semibold text-gray-800">커플룸</h3>
               </div>
-              <p className="text-sm text-gray-500">함께 꾸미는 우리만의 공간</p>
+              <div className="flex items-center justify-center gap-3">
+                <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl p-2 flex items-center justify-center">
+                  <MinimeCharacter config={myMinime || {}} size={50} />
+                </div>
+                <Heart className="w-5 h-5 text-rose-400 fill-rose-400 animate-pulse" />
+                <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl p-2 flex items-center justify-center">
+                  <MinimeCharacter config={partnerMinime || {}} size={50} />
+                </div>
+              </div>
             </Link>
           ) : (
             <div className="glass rounded-2xl p-6">
