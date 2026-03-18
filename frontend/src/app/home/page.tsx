@@ -19,7 +19,12 @@ export default function HomePage() {
   const [copied, setCopied] = useState(false);
   const [myMinime, setMyMinime] = useState<any>(null);
   const [partnerMinime, setPartnerMinime] = useState<any>(null);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -139,8 +144,8 @@ export default function HomePage() {
               <h3 className="font-semibold text-gray-800">내 미니룸</h3>
             </div>
             <div className="flex items-center gap-4">
-              <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl p-3 flex items-center justify-center">
-                <MinimeCharacter config={myMinime ?? {}} size={60} />
+              <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl p-3 flex items-center justify-center min-w-[84px] min-h-[99px] shrink-0">
+                {mounted && <MinimeCharacter config={myMinime ?? {}} size={60} />}
               </div>
               <p className="text-sm text-gray-500">{myMinime ? `${user.nickname || '나'}의 미니룸` : '나만의 공간을 꾸미고 관리해요'}</p>
             </div>
