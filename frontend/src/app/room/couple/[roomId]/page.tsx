@@ -11,7 +11,7 @@ import { BoardPanel } from '@/components/BoardPanel';
 import { SchedulePanel } from '@/components/SchedulePanel';
 import { TodoPanel } from '@/components/TodoPanel';
 import { MinimeWalker } from '@/components/MinimeWalker';
-import { connectSocket, joinRoom, leaveRoom } from '@/lib/socket';
+import { connectSocket, joinRoom, leaveRoom, shouldConnect } from '@/lib/socket';
 
 const BACKGROUNDS = [
   { id: 'bg_couple_default', name: '기본', color: 'from-pink-200 to-rose-200' },
@@ -42,10 +42,12 @@ export default function CoupleRoomPage() {
       router.push('/login');
       return;
     }
-    if (user?.id) connectSocket(user.id);
     loadRoom();
-    joinRoom(roomId);
-    return () => { leaveRoom(roomId); };
+    if (shouldConnect() && user?.id) {
+      connectSocket(user.id);
+      joinRoom(roomId);
+      return () => { leaveRoom(roomId); };
+    }
   }, [roomId, isAuthenticated, isLoading, user?.id]);
 
   const loadRoom = async () => {

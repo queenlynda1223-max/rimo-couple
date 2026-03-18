@@ -16,7 +16,7 @@ export function getSocket(): Socket {
   return socket;
 }
 
-function shouldConnect(): boolean {
+export function shouldConnect(): boolean {
   const url = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '';
   if (typeof window !== 'undefined' && !url && window.location.hostname !== 'localhost') {
     return false;
