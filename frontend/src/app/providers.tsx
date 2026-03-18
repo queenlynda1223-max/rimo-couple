@@ -16,7 +16,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    checkAuth();
+    checkAuth().catch(() => {});
     setMounted(true);
   }, [checkAuth]);
 

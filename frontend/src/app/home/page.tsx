@@ -8,7 +8,7 @@ import { roomApi, userApi } from '@/lib/api';
 import { Heart, Home, Users, LogOut, MessageCircle, Calendar, CheckSquare, Smile, Copy, Check } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
-import { MinimeCharacter } from '@/components/MinimeCharacter';
+import { SafeMinime } from '@/components/SafeMinime';
 
 export default function HomePage() {
   const { user, isAuthenticated, isLoading, logout } = useAuthStore();
@@ -39,13 +39,14 @@ export default function HomePage() {
   }, [user]);
 
   const loadRooms = async () => {
+    if (!user?.id) return;
     try {
-      const { data: miniData } = await roomApi.getMiniRoom(user!.id);
+      const { data: miniData } = await roomApi.getMiniRoom(user.id);
       setMiniRoom(miniData.room);
     } catch {}
 
     try {
-      const { data: minimeData } = await userApi.getMinime(user!.id);
+      const { data: minimeData } = await userApi.getMinime(user.id);
       if (minimeData?.minime) setMyMinime(minimeData.minime);
     } catch {}
 
@@ -54,7 +55,7 @@ export default function HomePage() {
       if (coupleData?.room) {
         setLocalCoupleRoom(coupleData.room);
         setCoupleRoom(coupleData.room);
-        const partnerId = coupleData.room.user1Id === user!.id
+        const partnerId = coupleData.room.user1Id === user.id
           ? coupleData.room.user2Id
           : coupleData.room.user1Id;
         if (partnerId) {
@@ -145,7 +146,7 @@ export default function HomePage() {
             </div>
             <div className="flex items-center gap-4">
               <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl p-3 flex items-center justify-center min-w-[84px] min-h-[99px] shrink-0">
-                {mounted && <MinimeCharacter config={myMinime ?? {}} size={60} />}
+                {mounted && <SafeMinime config={myMinime ?? {}} size={60} />}
               </div>
               <p className="text-sm text-gray-500">{myMinime ? `${user.nickname || '나'}의 미니룸` : '나만의 공간을 꾸미고 관리해요'}</p>
             </div>
@@ -161,11 +162,11 @@ export default function HomePage() {
               </div>
               <div className="flex items-center justify-center gap-3">
                 <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl p-2 flex items-center justify-center">
-                  <MinimeCharacter config={myMinime || {}} size={50} />
+                  <SafeMinime config={myMinime || {}} size={50} />
                 </div>
                 <Heart className="w-5 h-5 text-rose-400 fill-rose-400 animate-pulse" />
                 <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl p-2 flex items-center justify-center">
-                  <MinimeCharacter config={partnerMinime || {}} size={50} />
+                  <SafeMinime config={partnerMinime || {}} size={50} />
                 </div>
               </div>
             </Link>
