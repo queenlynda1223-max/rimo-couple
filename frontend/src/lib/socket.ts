@@ -2,7 +2,25 @@ import { io, Socket } from 'socket.io-client';
 
 let socket: Socket | null = null;
 
+function useRealSocket(): boolean {
+  if (typeof window === 'undefined') return true;
+  const url = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '';
+  if (!url && window.location.hostname !== 'localhost') return false;
+  if (url.startsWith('http://localhost') && window.location.hostname !== 'localhost') return false;
+  return true;
+}
+
+const noopSocket = {
+  connected: false,
+  connect: () => {},
+  disconnect: () => {},
+  emit: () => noopSocket,
+  on: () => noopSocket,
+  off: () => noopSocket,
+} as unknown as Socket;
+
 export function getSocket(): Socket {
+  if (!useRealSocket()) return noopSocket;
   if (!socket) {
     const backendUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000';
     socket = io(backendUrl, {
@@ -17,11 +35,7 @@ export function getSocket(): Socket {
 }
 
 export function shouldConnect(): boolean {
-  const url = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '';
-  if (typeof window !== 'undefined' && !url && window.location.hostname !== 'localhost') {
-    return false;
-  }
-  return true;
+  return useRealSocket();
 }
 
 export function connectSocket(userId: string) {
