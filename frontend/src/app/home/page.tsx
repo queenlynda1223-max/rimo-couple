@@ -37,24 +37,25 @@ export default function HomePage() {
     try {
       const { data: miniData } = await roomApi.getMiniRoom(user!.id);
       setMiniRoom(miniData.room);
+    } catch {}
 
-      try {
-        const { data: minimeData } = await userApi.getMinime(user!.id);
-        setMyMinime(minimeData.minime);
-      } catch {}
+    try {
+      const { data: minimeData } = await userApi.getMinime(user!.id);
+      if (minimeData?.minime) setMyMinime(minimeData.minime);
+    } catch {}
 
+    try {
       const { data: coupleData } = await roomApi.getMyCoupleRoom();
-      if (coupleData.room) {
+      if (coupleData?.room) {
         setLocalCoupleRoom(coupleData.room);
         setCoupleRoom(coupleData.room);
-
         const partnerId = coupleData.room.user1Id === user!.id
           ? coupleData.room.user2Id
           : coupleData.room.user1Id;
         if (partnerId) {
           try {
             const { data: pm } = await userApi.getMinime(partnerId);
-            setPartnerMinime(pm.minime);
+            if (pm?.minime) setPartnerMinime(pm.minime);
           } catch {}
         }
       }
@@ -138,11 +139,9 @@ export default function HomePage() {
               <h3 className="font-semibold text-gray-800">내 미니룸</h3>
             </div>
             <div className="flex items-center gap-4">
-              {myMinime && (
-                <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl p-3 flex items-center justify-center">
-                  <MinimeCharacter config={myMinime} size={60} />
-                </div>
-              )}
+              <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl p-3 flex items-center justify-center">
+                <MinimeCharacter config={myMinime ?? {}} size={60} />
+              </div>
               <p className="text-sm text-gray-500">{myMinime ? `${user.nickname || '나'}의 미니룸` : '나만의 공간을 꾸미고 관리해요'}</p>
             </div>
           </Link>
