@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { authApi } from '@/lib/api';
-import { connectSocket, disconnectSocket } from '@/lib/socket';
+import { disconnectSocket } from '@/lib/socket';
 
 function getToken(): string | null {
   if (typeof window === 'undefined') return null;
@@ -52,14 +52,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const { data } = await authApi.login({ email, password });
     setToken(data.token, remember);
     set({ user: data.user, isAuthenticated: true });
-    connectSocket(data.user.id);
   },
 
   signup: async (email, password, nickname) => {
     const { data } = await authApi.signup({ email, password, nickname });
     setToken(data.token, true);
     set({ user: data.user, isAuthenticated: true });
-    connectSocket(data.user.id);
   },
 
   logout: async () => {
@@ -78,7 +76,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const { data } = await authApi.getMe();
       set({ user: data.user, isAuthenticated: true, isLoading: false });
-      connectSocket(data.user.id);
     } catch (err: any) {
       if (err.status === 401) {
         clearToken();
