@@ -23,6 +23,9 @@ export function getSocket(): Socket {
   if (!useRealSocket()) return noopSocket;
   if (!socket) {
     const backendUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000';
+    if (typeof window !== 'undefined' && (backendUrl === 'http://localhost:4000' || backendUrl.startsWith('http://localhost'))) {
+      return noopSocket;
+    }
     socket = io(backendUrl, {
       withCredentials: true,
       autoConnect: false,
