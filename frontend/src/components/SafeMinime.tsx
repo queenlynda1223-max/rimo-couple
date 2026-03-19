@@ -6,7 +6,6 @@ import { Minime3D } from './Minime3D';
 interface Props {
   config?: Record<string, unknown>;
   size?: number;
-  showCapsule?: boolean;
   children?: ReactNode;
 }
 
@@ -35,12 +34,6 @@ export class SafeMinime extends Component<Props, State> {
         />
       );
     }
-    return (
-      <Minime3D
-        config={this.props.config ?? {}}
-        size={size}
-        showCapsule={this.props.showCapsule ?? false}
-      />
-    );
+    return <Minime3D config={this.props.config ?? {}} size={size} />;
   }
 }

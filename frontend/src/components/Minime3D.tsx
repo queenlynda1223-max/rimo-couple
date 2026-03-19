@@ -11,17 +11,9 @@ const Minime3DScene = dynamic(
 interface Minime3DProps {
   config?: Minime3DConfig;
   size?: number;
-  showCapsule?: boolean;
   className?: string;
 }
 
-export function Minime3D({ config = {}, size = 150, showCapsule = true, className = '' }: Minime3DProps) {
-  return (
-    <Minime3DScene
-      config={config}
-      size={size}
-      showCapsule={showCapsule}
-      className={className}
-    />
-  );
+export function Minime3D({ config = {}, size = 150, className = '' }: Minime3DProps) {
+  return <Minime3DScene config={config} size={size} className={className} />;
 }

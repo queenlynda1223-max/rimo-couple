@@ -4,16 +4,14 @@ import { Canvas } from '@react-three/fiber';
 import { Environment } from '@react-three/drei';
 import { Suspense } from 'react';
 import { Minime3DCharacter, type Minime3DConfig } from './Minime3DCharacter';
-import { Capsule } from './Capsule';
 
 interface Minime3DSceneProps {
   config?: Minime3DConfig;
   size?: number;
-  showCapsule?: boolean;
   className?: string;
 }
 
-function SceneContent({ config, size, showCapsule }: { config?: Minime3DConfig; size?: number; showCapsule?: boolean }) {
+function SceneContent({ config, size }: { config?: Minime3DConfig; size?: number }) {
   const scale = (size ?? 120) / 120;
   return (
     <>
@@ -22,7 +20,6 @@ function SceneContent({ config, size, showCapsule }: { config?: Minime3DConfig; 
       <directionalLight position={[4, 6, 5]} intensity={1.2} castShadow shadow-mapSize={[512, 512]} />
       <directionalLight position={[-3, 4, 3]} intensity={0.4} />
       <Environment preset="studio" />
-      {showCapsule && <Capsule radius={1.5} height={2.6} position={[0, 0, 0]} transparent />}
       <Suspense fallback={null}>
         <Minime3DCharacter config={config} scale={scale} />
       </Suspense>
@@ -30,7 +27,7 @@ function SceneContent({ config, size, showCapsule }: { config?: Minime3DConfig; 
   );
 }
 
-export function Minime3DScene({ config = {}, size = 150, showCapsule = true, className = '' }: Minime3DSceneProps) {
+export function Minime3DScene({ config = {}, size = 150, className = '' }: Minime3DSceneProps) {
   return (
     <div className={className} style={{ width: size, height: size, background: '#a89f94', borderRadius: 12 }}>
       <Canvas
@@ -39,7 +36,7 @@ export function Minime3DScene({ config = {}, size = 150, showCapsule = true, cla
         gl={{ antialias: true, alpha: false }}
         dpr={[1, 2]}
       >
-        <SceneContent config={config} size={size} showCapsule={showCapsule} />
+        <SceneContent config={config} size={size} />
       </Canvas>
     </div>
   );

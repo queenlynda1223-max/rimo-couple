@@ -139,7 +139,7 @@ export function MinimePanel({ userId, minime, onUpdate }: MinimePanelProps) {
     <div className="space-y-5 mb-20 md:mb-4">
       <div className="glass rounded-3xl p-6 flex flex-col items-center">
         <div className="rounded-2xl overflow-hidden mb-2 min-h-[150px] min-w-[150px]">
-          <Minime3D config={config} size={150} showCapsule={true} />
+          <Minime3D config={config} size={150} />
         </div>
         <p className="text-sm text-gray-500">미리보기</p>
       </div>

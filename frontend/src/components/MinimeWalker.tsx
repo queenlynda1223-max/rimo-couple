@@ -131,7 +131,7 @@ export function MinimeWalker({ config, size = 80, nickname, initialX, initialY }
           zIndex: Math.round(pos.y),
         }}
       >
-        <Minime3D config={config} size={size} showCapsule={false} />
+        <Minime3D config={config} size={size} />
         {nickname && (
           <p
             className="text-center text-xs font-medium text-gray-600 bg-white/70 backdrop-blur-sm px-2 py-0.5 rounded-full mx-auto mt-1 whitespace-nowrap"
