@@ -22,15 +22,30 @@ export function MinimeWalker({ config, size = 80, nickname, initialX, initialY }
   const animRef = useRef<number>();
 
   const charH = Math.round(size * (SPRITE_H / SPRITE_W));
+  const initialPosSetRef = useRef(false);
 
   useEffect(() => {
-    if (pos !== null || !containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const startX = initialX ?? (rect.width / 2 - size / 2);
-    const startY = initialY ?? (rect.height - charH - 20);
-    setPos({ x: startX, y: startY });
-    posRef.current = { x: startX, y: startY };
-  }, [pos, size, charH, initialX, initialY]);
+    const el = containerRef.current;
+    if (!el || initialPosSetRef.current) return;
+
+    const updatePos = () => {
+      if (initialPosSetRef.current) return;
+      const rect = el.getBoundingClientRect();
+      if (rect.height < charH + 20) return;
+      const startX = initialX ?? (rect.width / 2 - size / 2);
+      const startY = initialY ?? (rect.height - charH - 20);
+      initialPosSetRef.current = true;
+      setPos({ x: startX, y: startY });
+      posRef.current = { x: startX, y: startY };
+    };
+
+    updatePos();
+    const ro = new ResizeObserver(() => {
+      if (!initialPosSetRef.current) updatePos();
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [size, charH, initialX, initialY]);
 
   const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;

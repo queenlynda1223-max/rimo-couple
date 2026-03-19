@@ -1,12 +1,12 @@
-import { io, Socket } from 'socket.io-client';
+import type { Socket } from 'socket.io-client';
 
 let socket: Socket | null = null;
 
-function useRealSocket(): boolean {
-  if (typeof window === 'undefined') return true;
+function shouldUseRealSocket(): boolean {
+  if (typeof window === 'undefined') return false;
   const url = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '';
-  if (!url && window.location.hostname !== 'localhost') return false;
-  if (url.startsWith('http://localhost') && window.location.hostname !== 'localhost') return false;
+  if (!url) return false;
+  if (url.startsWith('http://localhost')) return window.location.hostname === 'localhost';
   return true;
 }
 
@@ -20,12 +20,11 @@ const noopSocket = {
 } as unknown as Socket;
 
 export function getSocket(): Socket {
-  if (!useRealSocket()) return noopSocket;
+  if (!shouldUseRealSocket()) return noopSocket;
   if (!socket) {
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000';
-    if (typeof window !== 'undefined' && (backendUrl === 'http://localhost:4000' || backendUrl.startsWith('http://localhost'))) {
-      return noopSocket;
-    }
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '';
+    if (!backendUrl || backendUrl.startsWith('http://localhost')) return noopSocket;
+    const { io } = require('socket.io-client');
     socket = io(backendUrl, {
       withCredentials: true,
       autoConnect: false,
@@ -38,7 +37,7 @@ export function getSocket(): Socket {
 }
 
 export function shouldConnect(): boolean {
-  return useRealSocket();
+  return shouldUseRealSocket();
 }
 
 export function connectSocket(userId: string) {
