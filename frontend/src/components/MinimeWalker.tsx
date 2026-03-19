@@ -24,6 +24,9 @@ export function MinimeWalker({ config, size = 80, nickname, initialX, initialY }
   const charH = Math.round(size * (SPRITE_H / SPRITE_W));
   const initialPosSetRef = useRef(false);
 
+  // Fallback position when container size isn't ready (e.g. min-height layout)
+  const defaultPos = { x: 120, y: 160 };
+
   useEffect(() => {
     const el = containerRef.current;
     if (!el || initialPosSetRef.current) return;
@@ -31,12 +34,14 @@ export function MinimeWalker({ config, size = 80, nickname, initialX, initialY }
     const updatePos = () => {
       if (initialPosSetRef.current) return;
       const rect = el.getBoundingClientRect();
-      if (rect.height < charH + 20) return;
-      const startX = initialX ?? (rect.width / 2 - size / 2);
-      const startY = initialY ?? (rect.height - charH - 20);
+      const w = rect.width || 300;
+      const h = Math.max(rect.height || 280, charH + 20);
+      const startX = initialX ?? (w / 2 - size / 2);
+      const startY = initialY ?? (h - charH - 20);
       initialPosSetRef.current = true;
-      setPos({ x: startX, y: startY });
-      posRef.current = { x: startX, y: startY };
+      const p = { x: Math.max(0, startX), y: Math.max(0, startY) };
+      setPos(p);
+      posRef.current = p;
     };
 
     updatePos();
@@ -44,7 +49,21 @@ export function MinimeWalker({ config, size = 80, nickname, initialX, initialY }
       if (!initialPosSetRef.current) updatePos();
     });
     ro.observe(el);
-    return () => ro.disconnect();
+    const t1 = setTimeout(updatePos, 50);
+    const t2 = setTimeout(updatePos, 200);
+    const t3 = setTimeout(() => {
+      if (!initialPosSetRef.current) {
+        initialPosSetRef.current = true;
+        setPos(defaultPos);
+        posRef.current = defaultPos;
+      }
+    }, 400);
+    return () => {
+      ro.disconnect();
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
   }, [size, charH, initialX, initialY]);
 
   const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
