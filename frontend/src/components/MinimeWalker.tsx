@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { MinimeCharacter } from './MinimeCharacter';
-import { SPRITE_W, SPRITE_H } from './MinimeSprites';
+import { Minime3D } from './Minime3D';
 
 interface MinimeWalkerProps {
   config: Record<string, any>;
@@ -21,7 +20,7 @@ export function MinimeWalker({ config, size = 80, nickname, initialX, initialY }
   const posRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const animRef = useRef<number>();
 
-  const charH = Math.round(size * (SPRITE_H / SPRITE_W));
+  const charH = size;
   const initialPosSetRef = useRef(false);
 
   // Fallback position when container size isn't ready (e.g. min-height layout)
@@ -132,7 +131,7 @@ export function MinimeWalker({ config, size = 80, nickname, initialX, initialY }
           zIndex: Math.round(pos.y),
         }}
       >
-        <MinimeCharacter config={config} size={size} animated={walking} frame={walking ? undefined : 0} />
+        <Minime3D config={config} size={size} showCapsule={false} />
         {nickname && (
           <p
             className="text-center text-xs font-medium text-gray-600 bg-white/70 backdrop-blur-sm px-2 py-0.5 rounded-full mx-auto mt-1 whitespace-nowrap"

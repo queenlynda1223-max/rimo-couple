@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { userApi } from '@/lib/api';
 import { Save } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { MinimeCharacter } from './MinimeCharacter';
+import { Minime3D } from './Minime3D';
 
 interface MinimePanelProps {
   userId: string;
@@ -22,25 +22,18 @@ const SKIN_COLORS = [
 ];
 
 const EXPRESSIONS = [
-  { id: 'happy', label: '행복', emoji: '😊' },
+  { id: 'gentle_smile', label: '부드러운 미소', emoji: '😊' },
+  { id: 'happy', label: '행복', emoji: '😄' },
   { id: 'neutral', label: '평온', emoji: '😐' },
   { id: 'wink', label: '윙크', emoji: '😉' },
-  { id: 'love', label: '사랑', emoji: '😍' },
-  { id: 'cool', label: '쿨', emoji: '😏' },
-  { id: 'surprised', label: '놀람', emoji: '😲' },
-  { id: 'shy', label: '수줍', emoji: '🥺' },
-  { id: 'sleepy', label: '졸림', emoji: '😴' },
 ];
 
 const HAIR_STYLES = [
-  { id: 'short', label: '숏컷', icon: '💇‍♂️' },
+  { id: 'long_straight', label: '롱 스트레이트', icon: '👩' },
   { id: 'bob', label: '단발', icon: '💇‍♀️' },
-  { id: 'medium', label: '중단발', icon: '👩' },
-  { id: 'long', label: '롱헤어', icon: '👩‍🦰' },
   { id: 'ponytail', label: '포니테일', icon: '🎀' },
-  { id: 'curly', label: '곱슬', icon: '🌀' },
-  { id: 'twintail', label: '트윈테일', icon: '🎐' },
   { id: 'bun', label: '번헤어', icon: '💫' },
+  { id: 'short', label: '숏컷', icon: '💇‍♂️' },
 ];
 
 const HAIR_COLORS = [
@@ -57,12 +50,10 @@ const HAIR_COLORS = [
 ];
 
 const OUTFITS = [
-  { id: 'tshirt', label: '티셔츠', icon: '👕' },
-  { id: 'hoodie', label: '후디', icon: '🧥' },
+  { id: 'dress_cream', label: '크림 원피스', icon: '👗' },
   { id: 'dress', label: '원피스', icon: '👗' },
-  { id: 'suit', label: '정장', icon: '🤵' },
-  { id: 'sweater', label: '스웨터', icon: '🧶' },
-  { id: 'overall', label: '오버올', icon: '👖' },
+  { id: 'casual', label: '캐주얼', icon: '👕' },
+  { id: 'hoodie', label: '후디', icon: '🧥' },
 ];
 
 const OUTFIT_COLORS = [
@@ -79,26 +70,46 @@ const OUTFIT_COLORS = [
 ];
 
 const ACCESSORIES = [
+  { id: 'glasses_silver', label: '실버 안경', icon: '👓' },
   { id: 'glasses', label: '안경', icon: '👓' },
-  { id: 'sunglasses', label: '선글라스', icon: '🕶️' },
-  { id: 'hat', label: '모자', icon: '🧢' },
-  { id: 'bow', label: '리본', icon: '🎀' },
-  { id: 'earrings', label: '귀걸이', icon: '💍' },
-  { id: 'necklace', label: '목걸이', icon: '📿' },
   { id: 'headband', label: '머리띠', icon: '👑' },
+  { id: 'bow', label: '리본', icon: '🎀' },
 ];
 
+const LEGACY_HAIR: Record<string, string> = { long: 'long_straight', medium: 'bob', curly: 'bun', twintail: 'ponytail' };
+const LEGACY_OUTFIT: Record<string, string> = { tshirt: 'casual', suit: 'casual', sweater: 'hoodie', overall: 'casual' };
+const LEGACY_EXPRESSION: Record<string, string> = { love: 'gentle_smile', cool: 'neutral', surprised: 'happy', shy: 'gentle_smile', sleepy: 'neutral' };
+
+function normalizeConfig(minime: any) {
+  if (!minime) {
+    return {
+      skinColor: 'fair',
+      expression: 'gentle_smile',
+      hairStyle: 'long_straight',
+      hairColor: '#2C1810',
+      outfit: 'dress_cream',
+      outfitColor: '#F5F0E1',
+      accessories: [] as string[],
+    };
+  }
+  return {
+    skinColor: minime.skinColor || 'fair',
+    expression: LEGACY_EXPRESSION[minime.expression ?? ''] ?? minime.expression ?? 'gentle_smile',
+    hairStyle: LEGACY_HAIR[minime.hairStyle ?? ''] ?? minime.hairStyle ?? 'long_straight',
+    hairColor: minime.hairColor || '#2C1810',
+    outfit: LEGACY_OUTFIT[minime.outfit ?? ''] ?? minime.outfit ?? 'dress_cream',
+    outfitColor: minime.outfitColor || '#F5F0E1',
+    accessories: Array.isArray(minime.accessories) ? minime.accessories : [],
+  };
+}
+
 export function MinimePanel({ userId, minime, onUpdate }: MinimePanelProps) {
-  const [config, setConfig] = useState({
-    skinColor: minime?.skinColor || 'fair',
-    expression: minime?.expression || 'happy',
-    hairStyle: minime?.hairStyle || 'short',
-    hairColor: minime?.hairColor || '#2C1810',
-    outfit: minime?.outfit || 'tshirt',
-    outfitColor: minime?.outfitColor || '#FF6B8A',
-    accessories: minime?.accessories || [],
-  });
+  const [config, setConfig] = useState(() => normalizeConfig(minime));
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setConfig(normalizeConfig(minime));
+  }, [minime]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -127,8 +138,8 @@ export function MinimePanel({ userId, minime, onUpdate }: MinimePanelProps) {
   return (
     <div className="space-y-5 mb-20 md:mb-4">
       <div className="glass rounded-3xl p-6 flex flex-col items-center">
-        <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-4 mb-2">
-          <MinimeCharacter config={config} size={150} />
+        <div className="rounded-2xl overflow-hidden mb-2 min-h-[150px] min-w-[150px]">
+          <Minime3D config={config} size={150} showCapsule={true} />
         </div>
         <p className="text-sm text-gray-500">미리보기</p>
       </div>

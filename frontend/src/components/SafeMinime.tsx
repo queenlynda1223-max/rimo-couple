@@ -1,11 +1,12 @@
 'use client';
 
 import { Component, type ReactNode } from 'react';
-import { MinimeCharacter } from './MinimeCharacter';
+import { Minime3D } from './Minime3D';
 
 interface Props {
   config?: Record<string, unknown>;
   size?: number;
+  showCapsule?: boolean;
   children?: ReactNode;
 }
 
@@ -21,18 +22,25 @@ export class SafeMinime extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error) {
-    console.warn('MinimeCharacter error:', error?.message ?? error);
+    console.warn('Minime3D error:', error?.message ?? error);
   }
 
   render() {
+    const size = this.props.size ?? 60;
     if (this.state.hasError) {
       return (
         <div
-          className="bg-pink-100/50 rounded-lg flex items-center justify-center"
-          style={{ width: this.props.size ?? 60, height: Math.round((this.props.size ?? 60) * (80 / 64)) }}
+          className="bg-[#a89f94] rounded-lg flex items-center justify-center"
+          style={{ width: size, height: size }}
         />
       );
     }
-    return <MinimeCharacter config={this.props.config ?? {}} size={this.props.size ?? 60} />;
+    return (
+      <Minime3D
+        config={this.props.config ?? {}}
+        size={size}
+        showCapsule={this.props.showCapsule ?? false}
+      />
+    );
   }
 }
