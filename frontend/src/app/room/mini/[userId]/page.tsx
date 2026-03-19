@@ -52,10 +52,15 @@ export default function MiniRoomPage() {
     try {
       const { data: roomData } = await roomApi.getMiniRoom(userId);
       setRoom(roomData.room);
-      const { data: minimeData } = await userApi.getMinime(userId);
-      setMinime(minimeData.minime);
     } catch (err: any) {
       toast.error('미니룸을 불러올 수 없습니다');
+      return;
+    }
+    try {
+      const { data: minimeData } = await userApi.getMinime(userId);
+      setMinime(minimeData.minime ?? null);
+    } catch {
+      setMinime(null);
     }
   };
 
@@ -117,9 +122,7 @@ export default function MiniRoomPage() {
           <div className={`relative rounded-3xl bg-gradient-to-br ${currentBg.color} p-8 min-h-[320px] md:min-h-[400px] overflow-hidden mb-4`}>
             <div className="absolute inset-0 bg-white/10" />
             <div className="relative z-10 h-full min-h-[280px] md:min-h-[360px]">
-              {minime && (
-                <MinimeWalker config={minime} size={90} nickname={user?.nickname || '나'} />
-              )}
+              <MinimeWalker config={minime ?? {}} size={90} nickname={user?.nickname || '나'} />
             </div>
 
             {isOwner && (
@@ -154,7 +157,7 @@ export default function MiniRoomPage() {
         {activeTab === 'board' && <BoardPanel roomType="mini" roomId={room.id} userId={userId} />}
         {activeTab === 'schedule' && <SchedulePanel roomType="mini" roomId={room.id} userId={userId} />}
         {activeTab === 'todo' && <TodoPanel roomType="mini" roomId={room.id} userId={userId} />}
-        {activeTab === 'minime' && minime && <MinimePanel userId={userId} minime={minime} onUpdate={setMinime} />}
+        {activeTab === 'minime' && <MinimePanel userId={userId} minime={minime ?? {}} onUpdate={setMinime} />}
 
         <div className="fixed bottom-0 left-0 right-0 glass border-t border-white/30 md:relative md:mt-4 md:rounded-2xl md:border">
           <div className="max-w-3xl mx-auto flex justify-around py-2">

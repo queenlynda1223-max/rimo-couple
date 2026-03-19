@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Minime } from '../entities/minime.entity';
@@ -12,8 +12,7 @@ export class MinimeService {
 
   async getMinime(userId: string) {
     const minime = await this.minimeRepository.findOne({ where: { userId } });
-    if (!minime) throw new NotFoundException('미니미를 찾을 수 없습니다');
-    return minime;
+    return minime ?? null;
   }
 
   async updateMinime(userId: string, data: Partial<Minime>) {
