@@ -1,7 +1,11 @@
-import { IsEmail, IsString, MinLength, IsOptional } from 'class-validator';
+import { IsString, MinLength, MaxLength, IsOptional } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class SignupDto {
-  @IsEmail({}, { message: '올바른 이메일 형식이 아닙니다' })
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @IsString({ message: '아이디를 입력해 주세요' })
+  @MinLength(1, { message: '아이디를 입력해 주세요' })
+  @MaxLength(255)
   email: string;
 
   @IsString()

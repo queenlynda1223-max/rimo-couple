@@ -3,12 +3,12 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useAuthStore, purgeAllLocalSession } from '@/store/auth-store';
-import { Heart, Mail, Lock, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { useAuthStore } from '@/store/auth-store';
+import { Heart, User, Lock, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [loginId, setLoginId] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -19,17 +19,11 @@ export default function LoginPage() {
   const login = useAuthStore((s) => s.login);
   const router = useRouter();
 
-  const handleClearStoredLogin = () => {
-    purgeAllLocalSession();
-    setRememberMe(false);
-    toast.success('저장된 로그인 정보를 모두 지웠어요');
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(email, password, rememberMe);
+      await login(loginId, password, rememberMe);
       toast.success('로그인 성공!');
       router.push('/home');
     } catch (err: any) {
@@ -57,14 +51,16 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">이메일</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">아이디</label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="hello@example.com"
+                  type="text"
+                  name="username"
+                  autoComplete="username"
+                  value={loginId}
+                  onChange={(e) => setLoginId(e.target.value)}
+                  placeholder="가입 시 사용한 아이디"
                   className="w-full pl-11 pr-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-transparent transition-all"
                   required
                 />
@@ -111,14 +107,6 @@ export default function LoginPage() {
               {loading ? '로그인 중...' : '로그인'}
             </button>
           </form>
-
-          <button
-            type="button"
-            onClick={handleClearStoredLogin}
-            className="w-full mt-4 py-2 text-sm text-gray-500 hover:text-gray-700 underline-offset-2 hover:underline"
-          >
-            저장된 로그인 정보 모두 지우기
-          </button>
 
           <p className="text-center text-sm text-gray-500 mt-6">
             아직 계정이 없으신가요?{' '}

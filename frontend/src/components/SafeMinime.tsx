@@ -1,7 +1,7 @@
 'use client';
 
 import { Component, type ReactNode } from 'react';
-import { Minime3D } from './Minime3D';
+import { MinimeCutoutImg } from './MinimeCutoutImg';
 
 interface Props {
   config?: Record<string, unknown>;
@@ -13,6 +13,7 @@ interface State {
   hasError: boolean;
 }
 
+/** 홈 등: 컷아웃 PNG 미니미 (faceType 기준) */
 export class SafeMinime extends Component<Props, State> {
   state: State = { hasError: false };
 
@@ -21,7 +22,7 @@ export class SafeMinime extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error) {
-    console.warn('Minime3D error:', error?.message ?? error);
+    console.warn('SafeMinime error:', error?.message ?? error);
   }
 
   render() {
@@ -29,11 +30,11 @@ export class SafeMinime extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div
-          className="bg-[#a89f94] rounded-lg flex items-center justify-center"
+          className="bg-gradient-to-b from-pink-100 to-rose-100 rounded-lg flex items-center justify-center"
           style={{ width: size, height: size }}
         />
       );
     }
-    return <Minime3D config={this.props.config ?? {}} size={size} />;
+    return <MinimeCutoutImg config={this.props.config ?? {}} size={size} />;
   }
 }

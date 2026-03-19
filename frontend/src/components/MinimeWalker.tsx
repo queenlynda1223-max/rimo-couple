@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Minime3D } from './Minime3D';
+import { MinimeCutoutImg } from './MinimeCutoutImg';
 
 interface MinimeWalkerProps {
   config: Record<string, any>;
@@ -129,9 +129,10 @@ export function MinimeWalker({ config, size = 80, nickname, initialX, initialY }
           transform: facingRight ? 'none' : 'scaleX(-1)',
           transition: 'transform 0.15s',
           zIndex: Math.round(pos.y),
+          pointerEvents: 'none',
         }}
       >
-        <Minime3D config={config} size={size} />
+        <MinimeCutoutImg config={config} size={size} />
         {nickname && (
           <p
             className="text-center text-xs font-medium text-gray-600 bg-white/70 backdrop-blur-sm px-2 py-0.5 rounded-full mx-auto mt-1 whitespace-nowrap"

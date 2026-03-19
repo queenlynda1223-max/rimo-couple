@@ -24,14 +24,14 @@ export class AuthService {
   async signup(dto: SignupDto) {
     const existing = await this.userRepository.findOne({ where: { email: dto.email } });
     if (existing) {
-      throw new ConflictException('이미 사용 중인 이메일입니다');
+      throw new ConflictException('이미 사용 중인 아이디입니다');
     }
 
     const passwordHash = await bcrypt.hash(dto.password, 10);
     const user = this.userRepository.create({
       email: dto.email,
       passwordHash,
-      nickname: dto.nickname || dto.email.split('@')[0],
+      nickname: dto.nickname || dto.email,
     });
     await this.userRepository.save(user);
 
@@ -50,12 +50,12 @@ export class AuthService {
   async login(dto: LoginDto) {
     const user = await this.userRepository.findOne({ where: { email: dto.email } });
     if (!user || !user.passwordHash) {
-      throw new UnauthorizedException('이메일 또는 비밀번호가 올바르지 않습니다');
+      throw new UnauthorizedException('아이디 또는 비밀번호가 올바르지 않습니다');
     }
 
     const isPasswordValid = await bcrypt.compare(dto.password, user.passwordHash);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('이메일 또는 비밀번호가 올바르지 않습니다');
+      throw new UnauthorizedException('아이디 또는 비밀번호가 올바르지 않습니다');
     }
 
     user.lastLoginAt = new Date();

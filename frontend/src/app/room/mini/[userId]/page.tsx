@@ -122,7 +122,7 @@ export default function MiniRoomPage() {
           <div className={`relative rounded-3xl bg-gradient-to-br ${currentBg.color} p-8 min-h-[320px] md:min-h-[400px] overflow-hidden mb-4`}>
             <div className="absolute inset-0 bg-white/10" />
             <div className="relative z-10 h-full min-h-[280px] md:min-h-[360px]">
-              <MinimeWalker config={minime ?? {}} size={90} nickname={user?.nickname || '나'} />
+              <MinimeWalker config={minime ?? {}} size={128} nickname={user?.nickname || '나'} />
             </div>
 
             {isOwner && (

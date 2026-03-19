@@ -42,6 +42,8 @@ export const authApi = {
 export const userApi = {
   getUser: (userId: string) => api.get(`/users/${userId}`),
   updateUser: (userId: string, data: any) => api.patch(`/users/${userId}`, data),
+  deleteUser: (userId: string, body: { password?: string; confirmation?: string }) =>
+    api.delete(`/users/${userId}`, { data: body }),
   getMinime: (userId: string) => api.get(`/users/${userId}/minime`),
   updateMinime: (userId: string, data: any) => api.put(`/users/${userId}/minime`, data),
   updateStatus: (userId: string, statusMessage: string) =>

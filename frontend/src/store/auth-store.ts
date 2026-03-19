@@ -44,6 +44,7 @@ interface User {
   id: string;
   email: string;
   nickname: string;
+  oauthProvider?: string | null;
   minime?: any;
   miniRoom?: any;
 }
@@ -52,8 +53,8 @@ interface AuthState {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (email: string, password: string, remember?: boolean) => Promise<void>;
-  signup: (email: string, password: string, nickname?: string) => Promise<void>;
+  login: (loginId: string, password: string, remember?: boolean) => Promise<void>;
+  signup: (loginId: string, password: string, nickname?: string) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
 }
@@ -63,14 +64,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoading: true,
   isAuthenticated: false,
 
-  login: async (email, password, remember = false) => {
-    const { data } = await authApi.login({ email, password });
+  login: async (loginId, password, remember = false) => {
+    const { data } = await authApi.login({ email: loginId, password });
     setToken(data.token, remember);
     set({ user: data.user, isAuthenticated: true });
   },
 
-  signup: async (email, password, nickname) => {
-    const { data } = await authApi.signup({ email, password, nickname });
+  signup: async (loginId, password, nickname) => {
+    const { data } = await authApi.signup({ email: loginId, password, nickname });
     setToken(data.token, true);
     set({ user: data.user, isAuthenticated: true });
   },

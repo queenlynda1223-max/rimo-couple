@@ -1,11 +1,24 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore, purgeAllLocalSession } from '@/store/auth-store';
 import { useRoomStore } from '@/store/room-store';
 import { roomApi, userApi } from '@/lib/api';
-import { Heart, Home, Users, LogOut, MessageCircle, Calendar, CheckSquare, Smile, Copy, Check } from 'lucide-react';
+import {
+  Heart,
+  Home,
+  Users,
+  LogOut,
+  ChevronDown,
+  MessageCircle,
+  Calendar,
+  CheckSquare,
+  Smile,
+  Copy,
+  Check,
+  UserX,
+} from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { SafeMinime } from '@/components/SafeMinime';
@@ -14,13 +27,20 @@ export default function HomePage() {
   const { user, isAuthenticated, isLoading, logout } = useAuthStore();
   const { setMiniRoom, setCoupleRoom } = useRoomStore();
   const [coupleRoom, setLocalCoupleRoom] = useState<any>(null);
-  const [inviteCode, setInviteCode] = useState('');
   const [joinCode, setJoinCode] = useState('');
   const [copied, setCopied] = useState(false);
   const [myMinime, setMyMinime] = useState<any>(null);
   const [partnerMinime, setPartnerMinime] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteConfirmPhrase, setDeleteConfirmPhrase] = useState('');
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const accountMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  const DELETE_PHRASE = '회원탈퇴';
 
   useEffect(() => {
     setMounted(true);
@@ -37,6 +57,24 @@ export default function HomePage() {
       loadRooms();
     }
   }, [user]);
+
+  useEffect(() => {
+    if (!accountMenuOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      if (accountMenuRef.current && !accountMenuRef.current.contains(e.target as Node)) {
+        setAccountMenuOpen(false);
+      }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setAccountMenuOpen(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [accountMenuOpen]);
 
   const loadRooms = async () => {
     if (!user?.id) return;
@@ -111,6 +149,36 @@ export default function HomePage() {
     router.push('/login');
   };
 
+  const handleDeleteAccount = async () => {
+    if (!user?.id) return;
+    const usesOAuthOnly = Boolean(user.oauthProvider);
+    if (usesOAuthOnly) {
+      if (deleteConfirmPhrase !== DELETE_PHRASE) {
+        toast.error(`확인 문구를 정확히 입력해 주세요: ${DELETE_PHRASE}`);
+        return;
+      }
+    } else if (!deletePassword.trim()) {
+      toast.error('비밀번호를 입력해 주세요');
+      return;
+    }
+
+    setDeleteLoading(true);
+    try {
+      await userApi.deleteUser(user.id, {
+        ...(usesOAuthOnly
+          ? { confirmation: deleteConfirmPhrase }
+          : { password: deletePassword }),
+      });
+      toast.success('계정이 삭제되었습니다');
+      purgeAllLocalSession();
+      router.push('/login');
+    } catch (err: any) {
+      toast.error(err.message || '탈퇴 처리에 실패했습니다');
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   if (isLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50">
@@ -128,18 +196,70 @@ export default function HomePage() {
             <span className="text-lg font-bold bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">RIMO</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
-            <span className="text-sm text-gray-600 hidden sm:block">{user.nickname || user.email}</span>
-            <button
-              type="button"
-              onClick={handlePurgeLocalLogin}
-              className="text-xs text-gray-400 hover:text-gray-600 px-2 py-1 rounded-lg hover:bg-white/50 max-w-[140px] sm:max-w-none leading-tight"
-              title="토큰·로그인 저장 등 이 브라우저 데이터만 삭제합니다"
-            >
-              저장 정보 삭제
-            </button>
-            <button onClick={handleLogout} className="p-2 text-gray-500 hover:text-gray-700 transition-colors" title="로그아웃">
-              <LogOut className="w-5 h-5" />
-            </button>
+            <span className="text-sm text-gray-600 hidden sm:block truncate max-w-[140px] md:max-w-none">
+              {user.nickname || user.email}
+            </span>
+            <div className="relative" ref={accountMenuRef}>
+              <button
+                type="button"
+                onClick={() => setAccountMenuOpen((o) => !o)}
+                className="flex items-center gap-1 p-2 rounded-xl text-gray-500 hover:text-gray-800 hover:bg-white/60 transition-colors"
+                aria-expanded={accountMenuOpen}
+                aria-haspopup="menu"
+                title="계정 메뉴"
+              >
+                <LogOut className="w-5 h-5" />
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform ${accountMenuOpen ? 'rotate-180' : ''}`}
+                  aria-hidden
+                />
+              </button>
+              {accountMenuOpen && (
+                <div
+                  role="menu"
+                  className="absolute right-0 top-full mt-1 min-w-[11rem] py-1 rounded-xl border border-gray-200/80 bg-white/95 shadow-lg backdrop-blur-md z-[60]"
+                >
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="w-full text-left px-4 py-2.5 text-sm text-gray-800 hover:bg-pink-50/80"
+                    onClick={async () => {
+                      setAccountMenuOpen(false);
+                      await handleLogout();
+                    }}
+                  >
+                    로그아웃
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50/80 flex items-center gap-2"
+                    onClick={() => {
+                      setAccountMenuOpen(false);
+                      setDeletePassword('');
+                      setDeleteConfirmPhrase('');
+                      setDeleteModalOpen(true);
+                    }}
+                  >
+                    <UserX className="w-4 h-4 shrink-0" />
+                    회원 탈퇴
+                  </button>
+                  <div className="border-t border-gray-100 my-1" />
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="w-full text-left px-4 py-2 text-xs text-gray-500 hover:bg-gray-50"
+                    title="서버 로그아웃 없이 이 브라우저에 저장된 토큰만 삭제합니다"
+                    onClick={() => {
+                      setAccountMenuOpen(false);
+                      handlePurgeLocalLogin();
+                    }}
+                  >
+                    이 기기 로그인만 지우기
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </nav>
@@ -250,7 +370,76 @@ export default function HomePage() {
             </Link>
           ))}
         </div>
+
       </main>
+
+      {deleteModalOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-account-title"
+        >
+          <div className="w-full max-w-md glass rounded-2xl p-6 shadow-xl border border-red-100">
+            <h2 id="delete-account-title" className="text-lg font-bold text-gray-900">
+              회원 탈퇴
+            </h2>
+            <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+              이 작업은 되돌릴 수 없습니다. 미니룸·게시·일정·할 일·미디어가 삭제되며, 참여 중인 커플룸은 전체가 삭제됩니다.
+            </p>
+
+            {user.oauthProvider ? (
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  확인 문구 입력
+                </label>
+                <input
+                  type="text"
+                  value={deleteConfirmPhrase}
+                  onChange={(e) => setDeleteConfirmPhrase(e.target.value)}
+                  placeholder={DELETE_PHRASE}
+                  className="w-full px-4 py-3 bg-white/70 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-200"
+                  autoComplete="off"
+                />
+                <p className="text-xs text-gray-500 mt-1.5">
+                  아래 문구를 그대로 입력하세요: <strong>{DELETE_PHRASE}</strong>
+                </p>
+              </div>
+            ) : (
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">비밀번호 확인</label>
+                <input
+                  type="password"
+                  value={deletePassword}
+                  onChange={(e) => setDeletePassword(e.target.value)}
+                  placeholder="현재 비밀번호"
+                  className="w-full px-4 py-3 bg-white/70 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-200"
+                  autoComplete="current-password"
+                />
+              </div>
+            )}
+
+            <div className="flex gap-2 mt-6">
+              <button
+                type="button"
+                onClick={() => setDeleteModalOpen(false)}
+                disabled={deleteLoading}
+                className="flex-1 py-3 rounded-xl text-sm font-medium text-gray-700 bg-white/80 border border-gray-200 hover:bg-gray-50 disabled:opacity-50"
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteAccount}
+                disabled={deleteLoading}
+                className="flex-1 py-3 rounded-xl text-sm font-semibold text-white bg-red-600 hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleteLoading ? '처리 중...' : '탈퇴하기'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
