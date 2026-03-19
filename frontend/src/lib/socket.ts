@@ -25,15 +25,17 @@ export function getSocket(): Socket {
     const backendUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '';
     if (!backendUrl || backendUrl.startsWith('http://localhost')) return noopSocket;
     const { io } = require('socket.io-client');
-    socket = io(backendUrl, {
+    const s = io(backendUrl, {
       withCredentials: true,
       autoConnect: false,
       reconnectionAttempts: 3,
       reconnectionDelay: 2000,
       timeout: 10000,
     });
+    socket = s;
+    return s;
   }
-  return socket;
+  return socket as Socket;
 }
 
 export function shouldConnect(): boolean {
