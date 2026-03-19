@@ -7,6 +7,7 @@ interface RoomState {
   setCurrentRoom: (room: any) => void;
   setCoupleRoom: (room: any) => void;
   setMiniRoom: (room: any) => void;
+  resetRooms: () => void;
 }
 
 export const useRoomStore = create<RoomState>((set) => ({
@@ -16,4 +17,5 @@ export const useRoomStore = create<RoomState>((set) => ({
   setCurrentRoom: (room) => set({ currentRoom: room }),
   setCoupleRoom: (room) => set({ coupleRoom: room }),
   setMiniRoom: (room) => set({ miniRoom: room }),
+  resetRooms: () => set({ currentRoom: null, coupleRoom: null, miniRoom: null }),
 }));

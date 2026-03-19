@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/store/auth-store';
+import { useAuthStore, purgeAllLocalSession } from '@/store/auth-store';
 import { useRoomStore } from '@/store/room-store';
 import { roomApi, userApi } from '@/lib/api';
 import { Heart, Home, Users, LogOut, MessageCircle, Calendar, CheckSquare, Smile, Copy, Check } from 'lucide-react';
@@ -105,6 +105,12 @@ export default function HomePage() {
     router.push('/');
   };
 
+  const handlePurgeLocalLogin = () => {
+    purgeAllLocalSession();
+    toast.success('이 기기에 저장된 로그인 정보를 지웠어요');
+    router.push('/login');
+  };
+
   if (isLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50">
@@ -121,9 +127,17 @@ export default function HomePage() {
             <Heart className="w-6 h-6 text-pink-500 fill-pink-500" />
             <span className="text-lg font-bold bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">RIMO</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <span className="text-sm text-gray-600 hidden sm:block">{user.nickname || user.email}</span>
-            <button onClick={handleLogout} className="p-2 text-gray-500 hover:text-gray-700 transition-colors">
+            <button
+              type="button"
+              onClick={handlePurgeLocalLogin}
+              className="text-xs text-gray-400 hover:text-gray-600 px-2 py-1 rounded-lg hover:bg-white/50 max-w-[140px] sm:max-w-none leading-tight"
+              title="토큰·로그인 저장 등 이 브라우저 데이터만 삭제합니다"
+            >
+              저장 정보 삭제
+            </button>
+            <button onClick={handleLogout} className="p-2 text-gray-500 hover:text-gray-700 transition-colors" title="로그아웃">
               <LogOut className="w-5 h-5" />
             </button>
           </div>

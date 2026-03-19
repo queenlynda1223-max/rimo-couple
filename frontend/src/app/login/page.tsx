@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useAuthStore } from '@/store/auth-store';
+import { useAuthStore, purgeAllLocalSession } from '@/store/auth-store';
 import { Heart, Mail, Lock, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -18,6 +18,12 @@ export default function LoginPage() {
   });
   const login = useAuthStore((s) => s.login);
   const router = useRouter();
+
+  const handleClearStoredLogin = () => {
+    purgeAllLocalSession();
+    setRememberMe(false);
+    toast.success('저장된 로그인 정보를 모두 지웠어요');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,6 +111,14 @@ export default function LoginPage() {
               {loading ? '로그인 중...' : '로그인'}
             </button>
           </form>
+
+          <button
+            type="button"
+            onClick={handleClearStoredLogin}
+            className="w-full mt-4 py-2 text-sm text-gray-500 hover:text-gray-700 underline-offset-2 hover:underline"
+          >
+            저장된 로그인 정보 모두 지우기
+          </button>
 
           <p className="text-center text-sm text-gray-500 mt-6">
             아직 계정이 없으신가요?{' '}
