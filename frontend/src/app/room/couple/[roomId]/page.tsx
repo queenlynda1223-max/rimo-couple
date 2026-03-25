@@ -134,14 +134,14 @@ export default function CoupleRoomPage() {
 
       <div className="max-w-3xl mx-auto px-4 py-4">
         {activeTab === 'room' && (
-          <div className={`relative rounded-3xl bg-gradient-to-br ${currentBg.color} p-8 min-h-[320px] md:min-h-[400px] overflow-hidden mb-4`}>
+          <div className={`relative rounded-3xl bg-gradient-to-br ${currentBg.color} p-4 md:p-8 min-h-[320px] md:min-h-[400px] overflow-hidden mb-4`}>
             <div className="absolute inset-0 bg-white/10" />
             <div className="relative z-10 h-full min-h-[280px] md:min-h-[360px]">
               {room.isConnected ? (
                 <>
-                  <MinimeWalker config={user1Minime || {}} size={110} nickname={room.user1?.nickname || '나'} initialX={80} />
+                  <MinimeWalker config={user1Minime || {}} size={110} nickname={room.user1?.nickname || '나'} initialX={40} />
                   <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-                    <MinimeWalker config={user2Minime || {}} size={110} nickname={room.user2?.nickname || '상대방'} initialX={200} />
+                    <MinimeWalker config={user2Minime || {}} size={110} nickname={room.user2?.nickname || '상대방'} initialX={140} />
                   </div>
                   <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30">
                     <Heart className="w-6 h-6 text-rose-400 fill-rose-400 animate-pulse" />
@@ -156,7 +156,7 @@ export default function CoupleRoomPage() {
               )}
             </div>
 
-            <div className="absolute bottom-4 right-4 flex gap-2">
+            <div className="absolute top-4 right-4 flex gap-2 md:bottom-4 md:top-auto">
               <button
                 onClick={() => setShowBgPicker(!showBgPicker)}
                 className="p-2.5 bg-white/80 backdrop-blur-sm rounded-xl hover:bg-white transition-colors shadow-sm"
@@ -166,7 +166,7 @@ export default function CoupleRoomPage() {
             </div>
 
             {showBgPicker && (
-              <div className="absolute bottom-16 right-4 glass rounded-2xl p-4 w-64 z-20">
+              <div className="absolute top-14 right-4 glass rounded-2xl p-4 w-64 z-20 md:bottom-16 md:top-auto">
                 <h4 className="text-sm font-semibold text-gray-700 mb-3">배경 선택</h4>
                 <div className="grid grid-cols-3 gap-2">
                   {BACKGROUNDS.map((bg) => (
