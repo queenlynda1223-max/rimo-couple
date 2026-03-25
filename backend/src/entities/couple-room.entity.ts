@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
 import { User } from './user.entity';
 
 @Entity('couple_rooms')
@@ -9,15 +9,13 @@ export class CoupleRoom {
   @Column()
   user1Id: string;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'user1Id' })
+  @ManyToOne(() => User, { eager: false })
   user1: User;
 
   @Column({ nullable: true })
   user2Id: string;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'user2Id' })
+  @ManyToOne(() => User, { eager: false })
   user2: User;
 
   @Column({ unique: true, length: 8 })
