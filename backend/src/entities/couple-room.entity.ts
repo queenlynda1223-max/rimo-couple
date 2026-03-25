@@ -6,16 +6,16 @@ export class CoupleRoom {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ nullable: true })
   user1Id: string;
 
-  @ManyToOne(() => User, { eager: false })
+  @ManyToOne(() => User, { nullable: true })
   user1: User;
 
   @Column({ nullable: true })
   user2Id: string;
 
-  @ManyToOne(() => User, { eager: false })
+  @ManyToOne(() => User, { nullable: true })
   user2: User;
 
   @Column({ unique: true, length: 8 })
