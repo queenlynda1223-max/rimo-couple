@@ -139,9 +139,9 @@ export default function CoupleRoomPage() {
             <div className="relative z-10 h-full min-h-[280px] md:min-h-[360px]">
               {room.isConnected ? (
                 <>
-                  <MinimeWalker config={user1Minime || {}} size={110} nickname={room.user1?.nickname || '나'} initialX={40} />
+                  <MinimeWalker config={user1Minime || {}} size={110} nickname={room.user1?.nickname || '나'} initialX={60} />
                   <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-                    <MinimeWalker config={user2Minime || {}} size={110} nickname={room.user2?.nickname || '상대방'} initialX={140} />
+                    <MinimeWalker config={user2Minime || {}} size={110} nickname={room.user2?.nickname || '상대방'} initialX={160} />
                   </div>
                   <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30">
                     <Heart className="w-6 h-6 text-rose-400 fill-rose-400 animate-pulse" />
