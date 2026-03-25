@@ -64,7 +64,10 @@ export class RoomsService {
   }
 
   async getCoupleRoom(roomId: string, userId: string) {
-    const room = await this.coupleRoomRepository.findOne({ where: { id: roomId } });
+    const room = await this.coupleRoomRepository.findOne({
+      where: { id: roomId },
+      relations: ['user1', 'user2'],
+    });
     if (!room) throw new NotFoundException('커플룸을 찾을 수 없습니다');
     if (room.user1Id !== userId && room.user2Id !== userId) {
       throw new ForbiddenException('접근 권한이 없습니다');
@@ -78,6 +81,7 @@ export class RoomsService {
         { user1Id: userId },
         { user2Id: userId },
       ],
+      relations: ['user1', 'user2'],
     });
     return room;
   }
